@@ -7,11 +7,11 @@ def variable_sort_key(variable):
     return int(variable.name[2:])
 
 
-img = cv.imread('beach.png', cv.IMREAD_GRAYSCALE)
+img = cv.imread('castle.jpg', cv.IMREAD_GRAYSCALE)
 hist = cv.calcHist([img],[0],None,[256],[0,256])
 L = 256
 Lnew = 256
-d = 3
+d = 2
 p = np.empty(L,dtype='float')
 for i in range(L):
     p[i] = hist[i]/(img.size)
@@ -31,7 +31,7 @@ for i in range(L):
     prob += s[i] >= 0, f'constraint_{i+2}'
 for j in range(L-d):
    prob += pulp.lpSum([s[i] for i in range(j,j+d)]) >= 1, f'constraint_{j+2+L}'
-   prob += pulp.lpSum([s[i] for i in range(j,j+d)]) <= 2*d, f'constraint_{j+2+L+L}' #MAYBE TEMPORARY
+   
    
    
 # Solve the problem using the default solver
@@ -74,5 +74,5 @@ plt.show()
 plt.imshow(newImg, cmap='gray')
 plt.xticks([]), plt.yticks([])
 plt.show()
-plt.hist(newImg.ravel(),Lnew,[0,Lnew], log=True)
+plt.hist(newImg.ravel(),Lnew,[0,Lnew])
 plt.show()
