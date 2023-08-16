@@ -8,9 +8,19 @@ def variable_sort_key(variable):
 def OTCM(img): 
     hist = cv.calcHist([img],[0],None,[256],[0,256])
     L = len(hist)
-    Lnew = 256
-    d = 3
-    u= 2
+    
+    #Parameters
+    (Lnew) = 256
+    (d) = 3
+    (u) = 2
+    #(Dc) = 0.5
+    (Delta) = 2
+    (tau) = 0.05
+    (phi) = 0.2
+    (b) = 30
+    (w) = 225
+    #(gamma) = 0.5
+    
     p = np.empty(L,dtype='float')
     for i in range(L):
         p[i] = hist[i]/(img.size)
@@ -24,16 +34,24 @@ def OTCM(img):
     prob += pulp.lpSum([p[i]* s[i] for i in range(L)]), 'obj'
     
     # Constraints
+    prob += s[0] == 0
     prob += pulp.lpSum([s[j] for j in range(L)]) <= Lnew, f'constraint_{1}'
+    
     
     for i in range(L):
         delta=1
-        if p[i]<=0.05: 
+        if p[i]<= tau: 
             delta=0
         prob += s[i] >= delta/d, f'constraint_{i+2}'
-        prob += s[i] <= u, f'constraint_{i+2+L}'    
-    
         
+        #if i<=b or i>=w:
+           #u = phi
+        prob += s[i] <= u, f'constraint_{i+2+L}'    
+        #u=2
+    #constraint for average intensity perserving
+    prob += pulp.lpSum([p[i]*s[j] for i in range(L) for j in range(i+1)]) - pulp.lpSum([p[i]*i for i in range(L)])<= Delta, f'constraint_{2*L+2}'
+    prob += pulp.lpSum([p[i]*s[j] for i in range(L) for j in range(i+1)]) - pulp.lpSum([p[i]*i for i in range(L)])>= -Delta, f'constraint_{2*L+3}'
+    
     # Solve the problem using the default solver
     prob.solve()
     
@@ -104,11 +122,14 @@ else:    #coloured img
     plt.imshow(img)
     plt.xticks([]), plt.yticks([])
     plt.show()
-    plt.hist(img.ravel(),255,[0,255])
+    plt.subplot(3,1,1), plt.hist(r.ravel(),255,[0,255],color='red'),plt.xticks([])
+    plt.subplot(3,1,2), plt.hist(g.ravel(),255,[0,255],color='green'),plt.xticks([])
+    plt.subplot(3,1,3), plt.hist(b.ravel(),255,[0,255],color='blue')
     plt.show()
     plt.imshow(newImg)
     plt.xticks([]), plt.yticks([])
     plt.show()
-    plt.hist(newImg.ravel(),255,[0,255])
+    plt.subplot(3,1,1), plt.hist(otcm_r.ravel(),255,[0,255],color='red'),plt.xticks([])
+    plt.subplot(3,1,2), plt.hist(otcm_g.ravel(),255,[0,255],color='green'),plt.xticks([])
+    plt.subplot(3,1,3), plt.hist(otcm_b.ravel(),255,[0,255],color='blue')
     plt.show()
-    

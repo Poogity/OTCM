@@ -7,7 +7,7 @@ def variable_sort_key(variable):
     return int(variable.name[2:])
 
 
-img = cv.imread('castle.jpg', cv.IMREAD_GRAYSCALE)
+img = cv.imread('kodim12.png', cv.IMREAD_GRAYSCALE)
 hist = cv.calcHist([img],[0],None,[256],[0,256])
 L = 256
 Lnew = 256

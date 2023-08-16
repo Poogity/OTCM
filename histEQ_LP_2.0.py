@@ -7,10 +7,10 @@ def variable_sort_key(variable):
     return int(variable.name[2:])
 
 
-img = cv.imread('castle.jpg', cv.IMREAD_GRAYSCALE)
+img = cv.imread('kodim12.png', cv.IMREAD_GRAYSCALE)
 hist = cv.calcHist([img],[0],None,[256],[0,256])
 L = len(hist)
-Lnew = 256
+Lnew = L
 d = 3
 u= 2
 p = np.empty(L,dtype='float')
@@ -44,7 +44,7 @@ sumArray = 0
 i=0
 t = np.empty(L)
 
-# Print the value of the variables at the optimum
+# Print the value of the variables at the optimal
 variables = prob.variables()
 # Sort the variables based on the numerical index using the custom key function
 sorted_variables = sorted(variables, key=variable_sort_key)
@@ -53,7 +53,7 @@ for v in sorted_variables:
     sumArray += v.varValue
     t[i] = int(sumArray + 0.5)
     i+=1
-
+    
 width,length = len(img[:,0]),len(img[0])
 newImg = np.empty((width,length))
 for i in range(width):
